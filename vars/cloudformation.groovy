@@ -118,7 +118,8 @@ def handleActionRequest(cf, config, action){
         result = handleActionRequest(cf, config, 'update')
       }
       success = true
-    case 'ready'
+      break
+    case 'ready':
       success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
       break
     break
