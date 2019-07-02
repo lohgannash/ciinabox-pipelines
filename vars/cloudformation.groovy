@@ -8,7 +8,7 @@ cloudformation
   stackName: 'dev'
   queryType: 'element' | 'output' ,  # either queryType or action should be supplied
   query: 'mysubstack.logicalname1' | 'outputKey', # depending on queryType
-  action: 'create'|'update'|'delete'|'exists',
+  action: 'create'|'update'|'delete'|'exists'|'crupdate',
   region: 'ap-southeast-2',
   templateUrl: 'https://s3.amazonaws.com/mybucket/cloudformation/app/master.json',
   parameters: [
@@ -54,7 +54,7 @@ def call(body) {
   }
 
   if(config.action){
-    handleActionRequest(cf, config)
+    handleActionRequest(cf, config, config.action)
   }
 
   if(config.queryType){
@@ -64,24 +64,34 @@ def call(body) {
 }
 
 @NonCPS
-def handleActionRequest(cf, config){
+def handleActionRequest(cf, config, action){
   def success = false
+  def result = false
+  def nonWait = false
 
-  switch(config.action) {
+  if(config.nonWait) {
+    nonWait = config.nonWait
+  }
+
+  switch(action) {
     case 'exists':
       if(doesStackExist(cf,config.stackName)) {
         println "Environment ${config.stackName} already exists"
         env["${config.stackName}_exists"] = 'true'
+        result = true
       } else {
-        env["${config.stackName}_exists"] = 'false'
         println "Environment ${config.stackName} does not exist"
+        env["${config.stackName}_exists"] = 'false'
       }
       success = true
       break
     case 'create':
       if(!doesStackExist(cf,config.stackName)) {
         create(cf, config)
-        success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
+        if(nonWait == false) {
+          success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
+        }
+        result = true
       } else {
         println "Environment ${config.stackName} already Exists"
         success = true
@@ -90,19 +100,34 @@ def handleActionRequest(cf, config){
     case 'delete':
       delete(cf, config)
       success = wait(cf, config.stackName, StackStatus.DELETE_COMPLETE)
+      result = true
       break
     case 'update':
       if(update(cf, config)) {
-        success = wait(cf, config.stackName, StackStatus.UPDATE_COMPLETE)
+        if(nonWait == false) {
+          success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
+        }
+        result = true 
       } else {
         success = true
       }
+      break
+    case 'crupdate':
+      result = handleActionRequest(cf,config, 'create')
+      if(!result) {
+        result = handleActionRequest(cf, config, 'update')
+      }
+      success = true
+    case 'ready'
+      success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
+      break
     break
   }
   if(!success) {
     printFailedStackEvents(cf, config.stackName, config.region)
     throw new Exception("Stack ${config.stackName} failed to ${config.action}")
   }
+  return result
 }
 
 @NonCPS
