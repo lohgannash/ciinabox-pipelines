@@ -91,6 +91,7 @@ def handleActionRequest(cf, config, action){
         if(nonWait == false) {
           success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
         }
+        success = true
         result = true
       } else {
         println "Environment ${config.stackName} already Exists"
@@ -107,6 +108,7 @@ def handleActionRequest(cf, config, action){
         if(nonWait == false) {
           success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
         }
+        success = true
         result = true 
       } else {
         success = true
