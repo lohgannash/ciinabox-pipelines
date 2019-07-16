@@ -73,6 +73,8 @@ def handleActionRequest(cf, config, action){
     nonWait = config.nonWait
   }
 
+  println "nonWait is set to ${nonWait}"
+
   switch(action) {
     case 'exists':
       if(doesStackExist(cf,config.stackName)) {
