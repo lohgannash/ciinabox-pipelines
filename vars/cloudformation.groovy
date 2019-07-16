@@ -91,10 +91,12 @@ def handleActionRequest(cf, config, action){
       if(!doesStackExist(cf,config.stackName)) {
         create(cf, config)
         if(nonWait == false) {
+          println "Nonwait was false"
           success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
           break
         }
         else{
+          println "Nonwait was true"
           success = true
           break
         }
