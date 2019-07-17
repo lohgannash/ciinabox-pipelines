@@ -112,19 +112,16 @@ def handleActionRequest(cf, config, action){
       result = true
       break
     case 'update':
-      if(update(cf, config)) {
-        if(nonWait == false) {
-          success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
-          break
-        }
-        else{
-          success = true
-          break
-        }
-        result = true 
-      } else {
-        success = true
+      update(cf,config)
+      if(nonWait == false) {
+        success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
+        break
       }
+      else{
+        success = true
+        break
+      }
+      result = true 
       break
     case 'crupdate':
       result = handleActionRequest(cf,config, 'create')
@@ -245,7 +242,7 @@ def delete(cf, config) {
 @NonCPS
 def update(cf, config) {
   if(doesStackExist(cf, config.stackName)) {
-    waitUntilComplete(cf, config.stackName)
+    //waitUntilComplete(cf, config.stackName)
     def request = new UpdateStackRequest()
       .withStackName(config.stackName)
       .withParameters(getStackParams(cf, config))
