@@ -98,12 +98,14 @@ def handleActionRequest(cf, config, action){
         else{
           println "Nonwait was true"
           success = true
+          result = true
           break
         }
         result = true
       } else {
         println "Environment ${config.stackName} already Exists"
         success = true
+        result = true
       }
       break
     case 'delete':
