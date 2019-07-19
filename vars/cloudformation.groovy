@@ -108,13 +108,20 @@ def handleActionRequest(cf, config, action){
       break
     case 'delete':
       delete(cf, config)
-      success = wait(cf, config.stackName, StackStatus.DELETE_COMPLETE)
+      if(nonWait == false) {
+        success = wait(cf, config.stackName, StackStatus.DELETE_COMPLETE)
+        break
+      }
+      else{
+        success = true
+        break
+      }
       result = true
       break
     case 'update':
       update(cf,config)
       if(nonWait == false) {
-        success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
+        success = wait(cf, config.stackName, StackStatus.UPDATE_COMPLETE)
         break
       }
       else{
@@ -226,7 +233,7 @@ def create(cf, config) {
 @NonCPS
 def delete(cf, config) {
   if(doesStackExist(cf, config.stackName)) {
-    waitUntilComplete(cf, config.stackName)
+    //waitUntilComplete(cf, config.stackName)
     if(config.stackState) {
       config.stackState = config.stackState.endsWith('/') ? config.stackState[0..-2] : config.stackState
       saveStackState(cf,config)
