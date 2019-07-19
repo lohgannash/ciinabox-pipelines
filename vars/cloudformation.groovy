@@ -91,14 +91,13 @@ def handleActionRequest(cf, config, action){
       if(!doesStackExist(cf,config.stackName)) {
         create(cf, config)
         if(nonWait == false) {
-          println "Nonwait was false"
+          println "nonWait set to false: Will wait for stack creation before proceeding..."
           success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
           break
         }
         else{
-          println "Nonwait was true"
+          println "nonWait set to true: Skipping wait for completion & proceeding with step"
           success = true
-          result = true
           break
         }
         result = true
@@ -111,10 +110,12 @@ def handleActionRequest(cf, config, action){
     case 'delete':
       delete(cf, config)
       if(nonWait == false) {
+        println "nonWait set to false: Will wait for stack deletion before proceeding..."
         success = wait(cf, config.stackName, StackStatus.DELETE_COMPLETE)
         break
       }
       else{
+        println "nonWait set to true: Skipping wait for deletion & proceeding with step"
         success = true
         break
       }
@@ -123,10 +124,12 @@ def handleActionRequest(cf, config, action){
     case 'update':
       update(cf,config)
       if(nonWait == false) {
+        println "nonWait set to false: Will wait for stack update to complete before proceeding..."
         success = wait(cf, config.stackName, StackStatus.UPDATE_COMPLETE)
         break
       }
       else{
+        println "nonWait set to true: Skipping wait for update to complete & proceeding with step"
         success = true
         break
       }
