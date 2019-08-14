@@ -142,9 +142,6 @@ def handleActionRequest(cf, config, action){
       }
       success = true
       break
-    case 'ready':
-      success = wait(cf, config.stackName, StackStatus.CREATE_COMPLETE)
-      break
     break
   }
   if(!success) {
@@ -238,7 +235,7 @@ def create(cf, config) {
 @NonCPS
 def delete(cf, config) {
   if(doesStackExist(cf, config.stackName)) {
-    //waitUntilComplete(cf, config.stackName)
+    waitUntilComplete(cf, config.stackName)
     if(config.stackState) {
       config.stackState = config.stackState.endsWith('/') ? config.stackState[0..-2] : config.stackState
       saveStackState(cf,config)
@@ -254,7 +251,7 @@ def delete(cf, config) {
 @NonCPS
 def update(cf, config) {
   if(doesStackExist(cf, config.stackName)) {
-    //waitUntilComplete(cf, config.stackName)
+    waitUntilComplete(cf, config.stackName)
     def request = new UpdateStackRequest()
       .withStackName(config.stackName)
       .withParameters(getStackParams(cf, config))
