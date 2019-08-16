@@ -251,7 +251,7 @@ def delete(cf, config) {
 @NonCPS
 def update(cf, config) {
   if(doesStackExist(cf, config.stackName)) {
-    if(nonWait == false) {
+    if(config.nonWait == false) {
       waitUntilComplete(cf, config.stackName)
     }
     def request = new UpdateStackRequest()
