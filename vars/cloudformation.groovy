@@ -142,6 +142,10 @@ def handleActionRequest(cf, config, action){
       }
       success = true
       break
+    case 'ready':
+      waitUntilComplete(cf, config.stackName)
+      result = true
+      break
     break
   }
   if(!success) {
@@ -452,6 +456,7 @@ def waitUntilComplete(cf, stackName) {
   switch(currentState) {
     case 'CREATE_COMPLETE':
     case 'UPDATE_COMPLETE':
+    case 'DELETE_COMPLETE':
     case 'DELETE_FAILED':
       return
     break
