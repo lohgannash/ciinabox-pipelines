@@ -143,8 +143,7 @@ def handleActionRequest(cf, config, action){
       success = true
       break
     case 'ready':
-      waitUntilComplete(cf, config.stackName)
-      result = true
+      success = wait(cf, config.stackName, StackStatus.UPDATE_COMPLETE)
       break
     break
   }
